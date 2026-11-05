@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Liquid Glass —— iOS 液态玻璃风格的界面组件与动效参考库，每个组件附带可配置的 AI 提示词。">
+<title>Liquid Glass · 界面组件与动效参考库</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='9' fill='%236d7dff'/><rect x='8' y='8' width='16' height='16' rx='5' fill='none' stroke='white' stroke-width='2.5'/></svg>">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/controls.css">
+<link rel="stylesheet" href="css/feedback.css">
+<link rel="stylesheet" href="css/scenes.css">
+</head>
+<body>
+
+<!-- 环境极光背景 -->
+<div class="aurora" aria-hidden="true"><i class="a1"></i><i class="a2"></i><i class="a3"></i></div>
+
+<!-- 阅读进度 -->
+<div class="progress-rail" aria-hidden="true"><i id="railFill"></i></div>
+
+<!-- 悬浮顶栏 -->
+<header class="topbar">
+  <div class="topbar-inner glass">
+    <button class="tbtn menu-tbtn" id="sideToggle" aria-label="打开目录" aria-expanded="false">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>
+    </button>
+    <a class="brand" href="#top">
+      <span class="brand-mark" aria-hidden="true"></span>
+      Liquid Glass <small>UI Kit</small>
+    </a>
+    <label class="search">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+      <input id="searchInput" type="search" placeholder="搜索组件、动效、场景…" autocomplete="off" aria-label="搜索组件">
+      <kbd>⌘K</kbd>
+    </label>
+    <button class="tbtn" id="themeToggle" aria-label="切换深浅主题">
+      <svg class="theme-ico-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+      <svg class="theme-ico-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.2 5.2l1.7 1.7M17.1 17.1l1.7 1.7M18.8 5.2l-1.7 1.7M6.9 17.1l-1.7 1.7"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- 侧边目录 -->
+<aside class="sidebar glass" id="sidebar" aria-label="组件分类目录">
+  <div class="side-cap">目录 / Contents</div>
+  <nav id="sideNav"></nav>
+  <div class="side-foot">共 <b id="sideCount">0</b> 个组件 · 每个都可复制为 AI 提示词</div>
+</aside>
+
+<!-- 主内容 -->
+<main class="content" id="top">
+  <section class="hero glass">
+    <div class="hero-orb" aria-hidden="true"></div>
+    <div class="hero-eyebrow">Liquid Glass Reference</div>
+    <h1>界面组件与动效的<em>参考底座</em></h1>
+    <p>覆盖按钮到场景、桌面到网格的完整组件集合。每个组件都是一份可运行的活演示，并附带一份纯文字 AI 提示词——只描述质感、层次与运动意图，不锁死颜色和尺寸；技术栈、风格、主题由你在卡片里自由勾选。桌面端交互同样是主场：可调列宽、万行虚拟列表、多级菜单栏、可拖分割面板，按 PC 网页与桌面应用的标准配置。</p>
+    <div class="hero-stats">
+      <div class="hstat"><b id="statComps">0</b><span>组件与演示</span></div>
+      <div class="hstat"><b id="statCats">0</b><span>分类体系</span></div>
+      <div class="hstat"><b>2<i>主题</i></b><span>深浅自动切换</span></div>
+      <div class="hstat"><b>4<i>选项</i></b><span>提示词可配置</span></div>
+    </div>
+  </section>
+  <div id="app"></div>
+</main>
+
+<!-- 页脚 -->
+<footer class="foot">
+  <div class="foot-in glass">
+    <p><span class="f-k">关于这个库</span>所有演示均为真实可交互的 HTML / CSS / JS，没有截图，没有占位图。提示词刻意回避具体色值与像素——把风格决定权留给负责生成的 AI，它需要的只是你对质感和动效的准确描述。</p>
+    <div class="f-r">LIQUID GLASS · UI REF<br>8 CATEGORIES / ALL LOCAL</div>
+  </div>
+</footer>
+
+<!-- ===== 全局浮层 ===== -->
+<div class="toast-stack" id="toastStack" aria-live="polite"></div>
+
+<div class="mask" id="mask" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal glass" id="modal">
+    <div class="m-ic" aria-hidden="true">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8.5v5M12 17h.01"/><path d="M10.3 3.9 2.6 17.4A2 2 0 0 0 4.3 20.4h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+    </div>
+    <h3 id="modalTitle">确认删除这条数据？</h3>
+    <p id="modalDesc">此操作不可撤销。该条记录会从你的工作区中永久移除。</p>
+    <div class="m-acts">
+      <button class="gbtn ghost" data-modal-close>取消</button>
+      <button class="gbtn dgr" id="modalOk">确认删除</button>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-mask" id="sheetMask" role="dialog" aria-modal="true" aria-label="动作面板">
+  <div class="asheet">
+    <div class="as-grp glass">
+      <div class="as-cap"><b>分享到</b>选择一个目标完成分享</div>
+      <button data-sheet-pick="生成链接">生成分享链接</button>
+      <button data-sheet-pick="添加到收藏">添加到收藏</button>
+      <button data-sheet-pick="导出为图片">导出为图片</button>
+      <button class="dgr" data-sheet-pick="删除草稿">删除草稿</button>
+    </div>
+    <button class="as-cancel" data-sheet-close>取消</button>
+  </div>
+</div>
+
+<div class="palette-mask" id="paletteMask" role="dialog" aria-modal="true" aria-label="命令面板">
+  <div class="palette glass">
+    <div class="palette-search">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="opacity:.45"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.2-4.2"/></svg>
+      <input id="paletteInput" type="text" placeholder="输入命令或跳转分类…" autocomplete="off">
+      <kbd style="font-family:var(--mono);font-size:10px;padding:2px 7px;border-radius:6px;background:var(--g3);border:1px solid var(--bd);color:var(--ink-3)">ESC</kbd>
+    </div>
+    <div class="palette-list" id="paletteList"></div>
+    <div class="palette-foot"><span>↑↓ 选择</span><span>↵ 打开</span><span>ESC 关闭</span></div>
+  </div>
+</div>
+
+<div class="menu-overlay" id="menuOverlay">
+  <nav id="overlayNav"></nav>
+</div>
+
+<!-- 沉浸演示弹层 -->
+<div class="imx-mask" id="imxMask" role="dialog" aria-modal="true" aria-label="沉浸演示">
+  <div class="imx glass">
+    <header class="imx-head">
+      <h3 id="imxTitle">组件</h3>
+      <span class="imx-en" id="imxEn"></span>
+      <span class="imx-cat" id="imxCat"></span>
+      <span class="imx-k" id="imxK"></span>
+      <button class="imx-close" data-imx-close aria-label="关闭沉浸演示">✕</button>
+    </header>
+    <div class="imx-body" id="imxBody"></div>
+    <footer class="imx-foot">
+      <span class="imx-live">LIVE DEMO · 可交互</span>
+      <p id="imxDesc"></p>
+      <button class="pbtn" data-imx-copy>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" width="12" height="12"><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        复制提示词
+      </button>
+    </footer>
+  </div>
+</div>
+
+<script src="js/data.js"></script>
+<script src="js/prompt.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
